@@ -1,0 +1,5 @@
+*.hex
+*.elf
+*.map
+.DS_Store
+.vscode/
