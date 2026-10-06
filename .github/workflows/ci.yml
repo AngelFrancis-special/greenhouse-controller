@@ -1,0 +1,45 @@
+name: Greenhouse Controller CI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    name: Build and Check Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install compilers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc g++
+
+      - name: Check C source
+        run: |
+          gcc -fsyntax-only GREENHOUSE_CONTROLLER_PIC.c
+
+      - name: Check C++ source
+        run: |
+          g++ -fsyntax-only GREENHOUSE_CONTROLLER_MBED.cpp
+
+      - name: Verify project files
+        run: |
+          test -f GREENHOUSE_CONTROLLER_PIC.c
+          test -f GREENHOUSE_CONTROLLER_MBED.cpp
+          test -f README.md
+          echo "Greenhouse Controller project files verified."
+
+      - name: CI passed
+        run: echo "Greenhouse Controller CI completed successfully."
+
+      
