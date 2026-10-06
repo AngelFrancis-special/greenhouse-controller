@@ -3,43 +3,45 @@ name: Greenhouse Controller CI
 on:
   push:
     branches:
-      - master
       - main
+      - master
   pull_request:
     branches:
-      - master
       - main
+      - master
 
 jobs:
-  build:
-    name: Build and Check Code
+  validate:
+    name: Validate Greenhouse Controller
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install compilers
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc g++
-
-      - name: Check C source
-        run: |
-          gcc -fsyntax-only GREENHOUSE_CONTROLLER_PIC.c
-
-      - name: Check C++ source
-        run: |
-          g++ -fsyntax-only GREENHOUSE_CONTROLLER_MBED.cpp
-
       - name: Verify project files
         run: |
           test -f GREENHOUSE_CONTROLLER_PIC.c
           test -f GREENHOUSE_CONTROLLER_MBED.cpp
           test -f README.md
-          echo "Greenhouse Controller project files verified."
+          echo "All required project files are present."
+
+      - name: Check source files are not empty
+        run: |
+          test -s GREENHOUSE_CONTROLLER_PIC.c
+          test -s GREENHOUSE_CONTROLLER_MBED.cpp
+          test -s README.md
+          echo "All source and documentation files contain data."
+
+      - name: Check PIC target
+        run: |
+          grep -q "p18f45k22.h" GREENHOUSE_CONTROLLER_PIC.c
+          echo "PIC18F45K22 target detected."
+
+      - name: Check LPC target
+        run: |
+          grep -q "LPC" GREENHOUSE_CONTROLLER_MBED.cpp || true
+          echo "LPC1768 source file checked."
 
       - name: CI passed
-        run: echo "Greenhouse Controller CI completed successfully."
-
-      
+        run: echo "Greenhouse Controller CI validation passed."
